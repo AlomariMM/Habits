@@ -464,6 +464,34 @@ const DAYS  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Satu
 const MNTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const CONFETTI_COLORS = ['#F0A020','#4CBD7B','#F2EDD8','#E06040','#3B9FD0','#D6A8E0'];
 
+// ── SUPABASE SYNC ──
+const SB_URL = 'https://mztbmiyswywgkveznvpn.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16dGJtaXlzd3l3Z2t2ZXpudnBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwMzc3MDIsImV4cCI6MjA5NzYxMzcwMn0.cFSUaceu3qrMXtS54w2jFhERzAtVrWKE6EWzByrFwmw';
+const SB_ID  = 'manal';
+
+async function cloudLoad() {
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/habit_data?id=eq.${SB_ID}&select=data`, {
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
+    });
+    const rows = await r.json();
+    return rows.length > 0 ? rows[0].data : null;
+  } catch(e) { return null; }
+}
+
+function cloudSave(d) {
+  fetch(`${SB_URL}/rest/v1/habit_data`, {
+    method: 'POST',
+    headers: {
+      apikey: SB_KEY,
+      Authorization: `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify({ id: SB_ID, data: d, updated_at: new Date().toISOString() })
+  }).catch(() => {});
+}
+
 // ── UTILS ──
 function today() {
   const d = new Date();
@@ -507,6 +535,7 @@ function load() {
 
 function persist(data) {
   localStorage.setItem(KEY, JSON.stringify(data));
+  cloudSave(data);
 }
 
 // ── STREAK CALC ──
@@ -530,10 +559,7 @@ function doneToday(h) { return h.completions.includes(today()); }
 
 // ── STATE ──
 let data = load();
-let prevAllDone = (() => {
-  const done = data.habits.filter(doneToday).length;
-  return data.habits.length > 0 && done === data.habits.length;
-})();
+let prevAllDone = data.habits.length > 0 && data.habits.filter(doneToday).length === data.habits.length;
 
 // ── HEADER ──
 function renderHeader() {
@@ -732,6 +758,20 @@ document.addEventListener('click', () => {
 renderHeader();
 renderList();
 renderProgress();
+
+// Sync with cloud on load
+(async () => {
+  const cloud = await cloudLoad();
+  if (cloud && cloud.habits && cloud.habits.length > 0) {
+    data = cloud;
+    localStorage.setItem(KEY, JSON.stringify(data));
+    prevAllDone = data.habits.length > 0 && data.habits.filter(doneToday).length === data.habits.length;
+    renderList();
+    renderProgress();
+  } else {
+    cloudSave(data);
+  }
+})();
 
 // Refresh at midnight
 const now = new Date();
