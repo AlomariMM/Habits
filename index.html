@@ -5,8 +5,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="theme-color" content="#1A1A1C">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFFFFF">
 <style>
 *, *::before, *::after {
   box-sizing: border-box;
@@ -16,16 +16,16 @@
 }
 
 :root {
-  --ground:      #1A1A1C;
-  --surface:     #242426;
-  --text:        #F2EDD8;
-  --text-dim:    #888890;
-  --accent:      #F0A020;
-  --accent-bg:   rgba(240,160,32,0.08);
-  --accent-glow: rgba(240,160,32,0.28);
-  --green:       #4CBD7B;
-  --border:      #34343A;
-  --danger:      #D84030;
+  --ground:      #FFFFFF;
+  --surface:     #F2F2F7;
+  --text:        #1C1C1E;
+  --text-dim:    #8E8E93;
+  --accent:      #D4880A;
+  --accent-bg:   rgba(212,136,10,0.08);
+  --accent-glow: rgba(212,136,10,0.20);
+  --green:       #34C759;
+  --border:      #E5E5EA;
+  --danger:      #FF3B30;
   --mono:        ui-monospace, 'SF Mono', Menlo, monospace;
   --sans:        -apple-system, 'SF Pro Text', system-ui, sans-serif;
 }
@@ -155,6 +155,7 @@ html, body {
 .row {
   display: flex;
   align-items: center;
+  flex-direction: row-reverse;
   gap: 14px;
   padding: 15px 22px;
   position: relative;
@@ -162,6 +163,7 @@ html, body {
   transition: background 0.12s;
   user-select: none;
   -webkit-user-select: none;
+  direction: rtl;
 }
 
 /* thin separator between rows */
@@ -169,8 +171,8 @@ html, body {
   content: '';
   position: absolute;
   top: 0;
-  left: 60px;
-  right: 0;
+  left: 0;
+  right: 60px;
   height: 1px;
   background: var(--border);
 }
@@ -185,7 +187,7 @@ html, body {
 .row.done::after {
   content: '';
   position: absolute;
-  left: 0;
+  right: 0;
   top: 10px;
   bottom: 10px;
   width: 2px;
@@ -410,6 +412,138 @@ html, body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 0 22px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  letter-spacing: 0.01em;
+}
+
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ── WEEK VIEW ── */
+.week-view {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: none;
+}
+
+.week-view.visible { display: block; }
+.list.hidden { display: none; }
+.add-area.hidden { display: none; }
+
+.week-col-headers {
+  display: flex;
+  align-items: center;
+  padding: 10px 22px 6px;
+  gap: 4px;
+  direction: rtl;
+  position: sticky;
+  top: 0;
+  background: var(--ground);
+  border-bottom: 1px solid var(--border);
+  z-index: 1;
+}
+
+.week-col-spacer { flex: 1; }
+
+.week-col-day {
+  width: 32px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.week-col-day.is-today { color: var(--accent); }
+
+.week-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 22px;
+  gap: 4px;
+  direction: rtl;
+  position: relative;
+}
+
+.week-row + .week-row { border-top: 1px solid var(--border); }
+
+.week-habit-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 4px;
+}
+
+.week-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+  background: transparent;
+}
+
+.week-dot.done {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.week-dot.is-today {
+  border-color: var(--accent);
+}
+
+.week-summary {
+  display: flex;
+  align-items: center;
+  padding: 14px 22px;
+  gap: 4px;
+  direction: rtl;
+  border-bottom: 2px solid var(--border);
+  background: var(--surface);
+}
+
+.week-summary-spacer { flex: 1; }
+
+.week-summary-num {
+  width: 32px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.week-summary-num.full { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -429,9 +563,16 @@ html, body {
     <div class="header-rule"></div>
   </header>
 
+  <div class="tabs">
+    <button class="tab active" id="tabToday">اليوم</button>
+    <button class="tab" id="tabWeek">الأسبوع</button>
+  </div>
+
   <ul class="list" id="list" role="list"></ul>
 
-  <footer class="add-area">
+  <div class="week-view" id="weekView"></div>
+
+  <footer class="add-area" id="addArea">
     <form class="add-form" id="addForm">
       <input
         class="add-input"
@@ -752,6 +893,73 @@ document.getElementById('addForm').addEventListener('submit', e => {
 // Hide show-del when tapping elsewhere
 document.addEventListener('click', () => {
   document.querySelectorAll('.row.show-del').forEach(el => el.classList.remove('show-del'));
+});
+
+// ── WEEK VIEW ──
+function getWeekDates() {
+  const dates = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push({
+      date: `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,
+      label: ['S','M','T','W','T','F','S'][d.getDay()],
+      isToday: i === 0
+    });
+  }
+  return dates;
+}
+
+function renderWeek() {
+  const view   = document.getElementById('weekView');
+  const dates  = getWeekDates();
+  const total  = data.habits.length;
+
+  // Column headers
+  let html = '<div class="week-col-headers"><span class="week-col-spacer"></span>';
+  dates.forEach(d => {
+    html += `<span class="week-col-day${d.isToday ? ' is-today' : ''}">${d.label}</span>`;
+  });
+  html += '</div>';
+
+  // Summary row (count per day)
+  html += '<div class="week-summary"><span class="week-summary-spacer"></span>';
+  dates.forEach(d => {
+    const count = data.habits.filter(h => h.completions.includes(d.date)).length;
+    const full  = count === total && total > 0;
+    html += `<span class="week-summary-num${full ? ' full' : ''}">${count}</span>`;
+  });
+  html += '</div>';
+
+  // Habit rows
+  data.habits.forEach(h => {
+    html += '<div class="week-row"><span class="week-habit-name">' + esc(h.name) + '</span>';
+    dates.forEach(d => {
+      const done = h.completions.includes(d.date);
+      html += `<span class="week-dot${done ? ' done' : ''}${d.isToday ? ' is-today' : ''}"></span>`;
+    });
+    html += '</div>';
+  });
+
+  view.innerHTML = html;
+}
+
+// ── TAB SWITCHING ──
+document.getElementById('tabToday').addEventListener('click', () => {
+  document.getElementById('tabToday').classList.add('active');
+  document.getElementById('tabWeek').classList.remove('active');
+  document.getElementById('list').classList.remove('hidden');
+  document.getElementById('weekView').classList.remove('visible');
+  document.getElementById('addArea').classList.remove('hidden');
+});
+
+document.getElementById('tabWeek').addEventListener('click', () => {
+  document.getElementById('tabWeek').classList.add('active');
+  document.getElementById('tabToday').classList.remove('active');
+  document.getElementById('list').classList.add('hidden');
+  document.getElementById('weekView').classList.add('visible');
+  document.getElementById('addArea').classList.add('hidden');
+  renderWeek();
 });
 
 // ── INIT ──
